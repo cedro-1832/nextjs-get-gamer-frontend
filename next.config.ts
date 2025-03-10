@@ -13,6 +13,9 @@ const nextConfig: NextConfig = {
   experimental: {
     appDir: true,
   },
+  images: {
+    domains: ["image.api.playstation.com"],
+  },
 };
 
 export default nextConfig;
