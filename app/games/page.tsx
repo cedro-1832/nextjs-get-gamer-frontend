@@ -1,4 +1,5 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import Image from "next/image";
 
@@ -16,6 +17,7 @@ interface Game {
 export default function GamesPage() {
   const [games, setGames] = useState<Game[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchGames = async () => {
@@ -29,8 +31,9 @@ export default function GamesPage() {
         }
         const data = await response.json();
         setGames(data.games);
-      } catch (error) {
+      } catch (error: any) {
         console.error("Error al obtener juegos:", error);
+        setError("No se pudieron cargar los juegos. Intenta más tarde.");
       } finally {
         setLoading(false);
       }
@@ -40,6 +43,7 @@ export default function GamesPage() {
   }, []);
 
   if (loading) return <p className="text-center mt-10 text-lg">Cargando juegos...</p>;
+  if (error) return <p className="text-center mt-10 text-red-500">{error}</p>;
 
   return (
     <div className="min-h-screen bg-gray-900 text-white p-8">

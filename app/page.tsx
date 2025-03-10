@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 
 interface Game {
+  play_guid: string;
   play_nombre: string;
   play_original_price: number;
   play_current_price: number;
@@ -16,21 +17,25 @@ interface Game {
 export default function Home() {
   const [games, setGames] = useState<Game[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchGames = async () => {
       try {
         const response = await fetch(
           "https://5rxiw2egtb.execute-api.us-east-1.amazonaws.com/dev/api/games",
-          { headers: { "Content-Type": "application/json" } }
+          { 
+            headers: { "Content-Type": "application/json" }
+          }
         );
         if (!response.ok) {
           throw new Error(`Error HTTP: ${response.status}`);
         }
         const data = await response.json();
         setGames(data.games);
-      } catch (error) {
+      } catch (error: any) {
         console.error("Error al obtener juegos:", error);
+        setError("No se pudieron cargar los juegos. Intenta más tarde.");
       } finally {
         setLoading(false);
       }
@@ -40,13 +45,14 @@ export default function Home() {
   }, []);
 
   if (loading) return <p className="text-center mt-10 text-lg">Cargando juegos...</p>;
+  if (error) return <p className="text-center mt-10 text-red-500">{error}</p>;
 
   return (
     <div className="container mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6 text-center">Juegos en Oferta</h1>
+      <h1 className="text-3xl font-bold mb-6 text-center">🎮 Juegos en Oferta</h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {games.map((game) => (
-          <div key={game.play_nombre} className="border rounded-lg shadow-lg overflow-hidden">
+          <div key={game.play_guid} className="border rounded-lg shadow-lg overflow-hidden bg-white dark:bg-gray-800">
             <Image
               src={game.play_image_url}
               alt={game.play_nombre}
@@ -64,7 +70,7 @@ export default function Home() {
                 href={game.play_purchase_link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-2 block bg-blue-500 text-white text-center py-2 rounded"
+                className="mt-2 block bg-blue-500 text-white text-center py-2 rounded hover:bg-blue-600 transition"
               >
                 Comprar
               </a>
