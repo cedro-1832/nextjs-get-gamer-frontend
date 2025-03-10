@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import axios from "axios";
 
 interface Game {
   play_guid: string;
@@ -22,18 +23,32 @@ export default function GamesPage() {
   useEffect(() => {
     const fetchGames = async () => {
       try {
-        const response = await fetch(
-          "https://5rxiw2egtb.execute-api.us-east-1.amazonaws.com/dev/api/games",
-          { headers: { "Content-Type": "application/json" } }
+        // Autenticación para obtener el token
+        const authResponse = await axios.post(
+          "https://5rxiw2egtb.execute-api.us-east-1.amazonaws.com/dev/api/auth/login",
+          {
+            username: "admin",
+            password: "password123",
+          }
         );
-        if (!response.ok) {
-          throw new Error(`Error HTTP: ${response.status}`);
-        }
-        const data = await response.json();
-        setGames(data.games);
-      } catch (error: any) {
-        console.error("Error al obtener juegos:", error);
-        setError("No se pudieron cargar los juegos. Intenta más tarde.");
+
+        const token = authResponse.data.token;
+
+        // Llamada a la API de juegos con el token
+        const response = await axios.get(
+          "https://5rxiw2egtb.execute-api.us-east-1.amazonaws.com/dev/api/games",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        setGames(response.data.games);
+      } catch (err) {
+        console.error("Error al obtener los juegos:", err);
+        setError("No se pudieron cargar los juegos. Inténtalo de nuevo.");
       } finally {
         setLoading(false);
       }
@@ -43,35 +58,36 @@ export default function GamesPage() {
   }, []);
 
   if (loading) return <p className="text-center mt-10 text-lg">Cargando juegos...</p>;
-  if (error) return <p className="text-center mt-10 text-red-500">{error}</p>;
+  if (error) return <p className="text-center mt-10 text-lg text-red-500">{error}</p>;
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-8">
-      <h1 className="text-3xl font-bold text-center mb-8">🎮 Juegos Disponibles</h1>
+    <div className="container mx-auto p-6">
+      <h1 className="text-3xl font-bold mb-6 text-center">Juegos en Oferta</h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {games.map((game) => (
-          <div key={game.play_guid} className="bg-gray-800 p-4 rounded-lg shadow-md hover:scale-105 transition-transform">
+          <div key={game.play_guid} className="border rounded-lg shadow-lg overflow-hidden bg-white dark:bg-gray-800">
             <Image
               src={game.play_image_url}
               alt={game.play_nombre}
               width={300}
-              height={400}
-              className="rounded-md w-full"
+              height={200}
+              className="w-full h-40 object-cover"
             />
-            <h2 className="text-lg font-bold mt-2">{game.play_nombre}</h2>
-            <p className="text-sm text-gray-400">{game.play_platforms}</p>
-            <p className="mt-2 text-green-400 font-bold">
-              ${game.play_current_price}{" "}
-              <span className="line-through text-red-400">${game.play_original_price}</span> (-{game.play_discount}%)
-            </p>
-            <a
-              href={game.play_purchase_link}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-3 inline-block bg-blue-600 hover:bg-blue-500 text-white text-sm px-4 py-2 rounded"
-            >
-              Comprar
-            </a>
+            <div className="p-4">
+              <h2 className="font-bold text-lg">{game.play_nombre}</h2>
+              <p className="text-gray-600">{game.play_platforms}</p>
+              <p className="text-red-500 font-bold">-{game.play_discount}%</p>
+              <p className="text-gray-500 line-through">${game.play_original_price}</p>
+              <p className="text-green-500 font-bold">${game.play_current_price}</p>
+              <a
+                href={game.play_purchase_link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-2 block bg-blue-500 text-white text-center py-2 rounded"
+              >
+                Comprar
+              </a>
+            </div>
           </div>
         ))}
       </div>
