@@ -18,4 +18,6 @@ npm install
 
 # 4️⃣ Iniciar el servidor de desarrollo
 echo "🚀 Iniciando el servidor de desarrollo en http://localhost:3000"
+npm run build
 npm run dev
+
