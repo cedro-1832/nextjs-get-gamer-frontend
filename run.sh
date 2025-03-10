@@ -16,8 +16,15 @@ npm cache clean --force
 echo "📦 Instalando dependencias..."
 npm install
 
+# 4️⃣ Buscar un puerto libre antes de iniciar el servidor
+PORT=3000
+while lsof -i :$PORT &>/dev/null; do
+    ((PORT++))
+done
+
 # 4️⃣ Iniciar el servidor de desarrollo
-echo "🚀 Iniciando el servidor de desarrollo en http://localhost:3000"
+echo "🚀 Iniciando el servidor de desarrollo en http://localhost:$PORT"
+npm run dev -- -p $PORT
 npm run build
-npm run dev
+
 
