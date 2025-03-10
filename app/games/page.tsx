@@ -1,8 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { getGames } from "@/lib/games";
-import { useAuthStore } from "@/store/authStore";
 
 interface Game {
   play_guid: string;
@@ -13,23 +11,39 @@ interface Game {
   play_platforms: string;
   play_purchase_link: string;
   play_image_url: string;
-  play_additional_service?: string;
 }
 
 export default function GamesPage() {
   const [games, setGames] = useState<Game[]>([]);
-  const { token } = useAuthStore();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (token) {
-      getGames(token).then((data) => setGames(data));
-    }
-  }, [token]);
+    const fetchGames = async () => {
+      try {
+        const response = await fetch(
+          "https://5rxiw2egtb.execute-api.us-east-1.amazonaws.com/dev/api/games",
+          { headers: { "Content-Type": "application/json" } }
+        );
+        if (!response.ok) {
+          throw new Error(`Error HTTP: ${response.status}`);
+        }
+        const data = await response.json();
+        setGames(data.games);
+      } catch (error) {
+        console.error("Error al obtener juegos:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchGames();
+  }, []);
+
+  if (loading) return <p className="text-center mt-10 text-lg">Cargando juegos...</p>;
 
   return (
     <div className="min-h-screen bg-gray-900 text-white p-8">
       <h1 className="text-3xl font-bold text-center mb-8">🎮 Juegos Disponibles</h1>
-      {games.length === 0 && <p className="text-center">Cargando juegos...</p>}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {games.map((game) => (
           <div key={game.play_guid} className="bg-gray-800 p-4 rounded-lg shadow-md hover:scale-105 transition-transform">
@@ -42,7 +56,6 @@ export default function GamesPage() {
             />
             <h2 className="text-lg font-bold mt-2">{game.play_nombre}</h2>
             <p className="text-sm text-gray-400">{game.play_platforms}</p>
-            <p className="text-sm text-yellow-400">{game.play_additional_service || "Estándar"}</p>
             <p className="mt-2 text-green-400 font-bold">
               ${game.play_current_price}{" "}
               <span className="line-through text-red-400">${game.play_original_price}</span> (-{game.play_discount}%)

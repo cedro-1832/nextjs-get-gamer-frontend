@@ -15,37 +15,38 @@ interface Game {
 
 export default function Home() {
   const [games, setGames] = useState<Game[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchGames = async () => {
       try {
         const response = await fetch(
           "https://5rxiw2egtb.execute-api.us-east-1.amazonaws.com/dev/api/games",
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
+          { headers: { "Content-Type": "application/json" } }
         );
+        if (!response.ok) {
+          throw new Error(`Error HTTP: ${response.status}`);
+        }
         const data = await response.json();
         setGames(data.games);
       } catch (error) {
-        console.error("Error al obtener juegos", error);
+        console.error("Error al obtener juegos:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchGames();
   }, []);
 
+  if (loading) return <p className="text-center mt-10 text-lg">Cargando juegos...</p>;
+
   return (
     <div className="container mx-auto p-6">
       <h1 className="text-3xl font-bold mb-6 text-center">Juegos en Oferta</h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {games.map((game) => (
-          <div
-            key={game.play_nombre}
-            className="border rounded-lg shadow-lg overflow-hidden"
-          >
+          <div key={game.play_nombre} className="border rounded-lg shadow-lg overflow-hidden">
             <Image
               src={game.play_image_url}
               alt={game.play_nombre}
