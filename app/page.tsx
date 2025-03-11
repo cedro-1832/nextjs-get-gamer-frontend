@@ -19,30 +19,55 @@ export default function Home() {
   const [games, setGames] = useState<Game[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [token, setToken] = useState<string | null>(null);
 
   useEffect(() => {
+    const fetchToken = async () => {
+      try {
+        const storedToken = localStorage.getItem("authToken");
+        if (storedToken) {
+          setToken(storedToken);
+          return;
+        }
+
+        const authResponse = await axios.post(
+          "https://5rxiw2egtb.execute-api.us-east-1.amazonaws.com/dev/api/auth/login",
+          { username: "admin", password: "password123" },
+          { headers: { "Content-Type": "application/json" } }
+        );
+
+        const newToken = authResponse.data.token;
+        localStorage.setItem("authToken", newToken);
+        setToken(newToken);
+      } catch (err) {
+        console.error("Error de autenticación:", err);
+        setError("No se pudo autenticar.");
+      }
+    };
+
+    fetchToken();
+  }, []);
+
+  useEffect(() => {
+    if (!token) return;
+
     const fetchGames = async () => {
       try {
         const response = await axios.get(
           "https://5rxiw2egtb.execute-api.us-east-1.amazonaws.com/dev/api/games?page=1&limit=24",
-          {
-            headers: {
-              Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiaWF0IjoxNzQxNjU1ODU0LCJleHAiOjE3NDE2NTk0NTR9.1mAVGMVzOC_nGgyshVfWllobc8jHJ_ZF5T6-T9AlPxE`,
-              "Content-Type": "application/json",
-            },
-          }
+          { headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" } }
         );
-        setGames(response.data?.data || []); // Asegurar que `games` sea un array válido
+        setGames(response.data?.data || []);
       } catch (err) {
         console.error("Error al obtener los juegos:", err);
-        setError("No se pudieron cargar los juegos. Inténtalo de nuevo.");
+        setError("No se pudieron cargar los juegos.");
       } finally {
         setLoading(false);
       }
     };
 
     fetchGames();
-  }, []);
+  }, [token]);
 
   if (loading) return <p className="text-center mt-10 text-lg">Cargando juegos...</p>;
   if (error) return <p className="text-center mt-10 text-lg text-red-500">{error}</p>;
