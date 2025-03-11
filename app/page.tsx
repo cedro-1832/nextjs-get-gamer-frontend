@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { Table, Pagination, Image, Card, Spin, message } from "antd";
 
 interface Game {
   play_guid: string;
@@ -44,7 +45,7 @@ export default function Home() {
         localStorage.setItem("authToken", newToken);
         setToken(newToken);
       } catch (err) {
-        console.error("Error de autenticación:", err);
+        message.error("Error de autenticación.");
         setError("No se pudo autenticar.");
       }
     };
@@ -58,13 +59,14 @@ export default function Home() {
 
     const fetchGames = async () => {
       try {
+        setLoading(true);
         const response = await axios.get(
           `https://5rxiw2egtb.execute-api.us-east-1.amazonaws.com/dev/api/games?page=${currentPage}&limit=${pageSize}`,
           { headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" } }
         );
         setGames(response.data?.data || []);
       } catch (err) {
-        console.error("Error al obtener los juegos:", err);
+        message.error("Error al obtener los juegos.");
         setError("No se pudieron cargar los juegos.");
       } finally {
         setLoading(false);
@@ -74,80 +76,69 @@ export default function Home() {
     fetchGames();
   }, [token, currentPage]);
 
-  if (loading) return <p className="text-center mt-10 text-lg">Cargando juegos...</p>;
+  if (loading) return <Spin size="large" className="flex justify-center items-center mt-10" />;
   if (error) return <p className="text-center mt-10 text-lg text-red-500">{error}</p>;
 
+  const columns = [
+    {
+      title: "Imagen",
+      dataIndex: "play_image_url",
+      key: "play_image_url",
+      render: (url: string) => (
+        <Image
+          width={80}
+          height={80}
+          src={url}
+          style={{ borderRadius: "8px", cursor: "pointer" }}
+          preview={{ mask: "Ampliar", maskStyle: { fontSize: "14px" } }}
+        />
+      ),
+    },
+    { title: "Nombre", dataIndex: "play_nombre", key: "play_nombre" },
+    { title: "Plataforma", dataIndex: "play_platforms", key: "play_platforms" },
+    { title: "Precio Original", dataIndex: "play_original_price", key: "play_original_price", render: (price: number) => `$${price}` },
+    { title: "Precio con Descuento", dataIndex: "play_current_price", key: "play_current_price", render: (price: number) => <span style={{ color: "green" }}>${price}</span> },
+    { title: "Descuento", dataIndex: "play_discount", key: "play_discount", render: (discount: number) => `${discount}%` },
+    { title: "Edición", dataIndex: "play_edition", key: "play_edition" },
+    { title: "Servicio Adicional", dataIndex: "play_additional_service", key: "play_additional_service" },
+    {
+      title: "Enlace",
+      dataIndex: "play_purchase_link",
+      key: "play_purchase_link",
+      render: (link: string) => (
+        <a href={link} target="_blank" rel="noopener noreferrer" style={{ color: "blue", textDecoration: "underline" }}>
+          Comprar
+        </a>
+      ),
+    },
+  ];
+
   return (
-    <div className="container mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6 text-center">Juegos en Oferta</h1>
+    <div style={{ maxWidth: "1200px", margin: "auto", padding: "20px" }}>
+      <h1 style={{ textAlign: "center", fontSize: "24px", fontWeight: "bold", marginBottom: "20px" }}>Juegos en Oferta</h1>
 
       {/* Tabla de Juegos */}
-      <h2 className="text-2xl font-bold mt-10 mb-4 text-center">Listado de Juegos</h2>
-      {games.length > 0 ? (
-        <div className="overflow-x-auto">
-          <table className="min-w-full bg-white border border-gray-300 rounded-lg shadow-md">
-            <thead>
-              <tr className="bg-gray-200 text-left">
-                <th className="p-2 border">Imagen</th>
-                <th className="p-2 border">Nombre</th>
-                <th className="p-2 border">Plataforma</th>
-                <th className="p-2 border">Precio Original</th>
-                <th className="p-2 border">Precio con Descuento</th>
-                <th className="p-2 border">Descuento</th>
-                <th className="p-2 border">Edición</th>
-                <th className="p-2 border">Servicio Adicional</th>
-                <th className="p-2 border">Enlace</th>
-              </tr>
-            </thead>
-            <tbody>
-              {games.map((game) => (
-                <tr key={game.play_guid} className="hover:bg-gray-100">
-                  <td className="p-2 border text-center">
-                    <div className="relative">
-                      <img
-                        src={game.play_image_url}
-                        alt={game.play_nombre}
-                        className="w-16 h-16 object-cover rounded cursor-pointer transition-transform transform hover:scale-125"
-                      />
-                    </div>
-                  </td>
-                  <td className="p-2 border">{game.play_nombre}</td>
-                  <td className="p-2 border">{game.play_platforms}</td>
-                  <td className="p-2 border line-through text-gray-500">${game.play_original_price}</td>
-                  <td className="p-2 border text-green-500">${game.play_current_price}</td>
-                  <td className="p-2 border">{game.play_discount}%</td>
-                  <td className="p-2 border">{game.play_edition}</td>
-                  <td className="p-2 border">{game.play_additional_service}</td>
-                  <td className="p-2 border text-center">
-                    <a href={game.play_purchase_link} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">
-                      Comprar
-                    </a>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      ) : (
-        <p className="text-center text-lg">No hay juegos disponibles.</p>
-      )}
+      <Card bordered={false} style={{ boxShadow: "0px 4px 10px rgba(0,0,0,0.1)", borderRadius: "8px", overflow: "hidden" }}>
+        <Table
+          dataSource={games}
+          columns={columns}
+          rowKey="play_guid"
+          pagination={false}
+          bordered
+          size="middle"
+        />
+      </Card>
 
       {/* Paginación */}
-      <div className="flex justify-center mt-6 space-x-4">
-        <button
-          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-gray-300"
-          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-          disabled={currentPage === 1}
-        >
-          Anterior
-        </button>
-        <span className="mx-4 text-lg font-semibold">Página {currentPage}</span>
-        <button
-          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-gray-300"
-          onClick={() => setCurrentPage((prev) => prev + 1)}
-        >
-          Siguiente
-        </button>
+      <div style={{ display: "flex", justifyContent: "center", marginTop: "20px" }}>
+        <Pagination
+          current={currentPage}
+          pageSize={pageSize}
+          onChange={(page) => setCurrentPage(page)}
+          total={1757}
+          showSizeChanger={false}
+          style={{ textAlign: "center" }}
+        />
       </div>
     </div>
   );
