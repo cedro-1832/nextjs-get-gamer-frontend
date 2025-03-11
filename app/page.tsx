@@ -23,7 +23,6 @@ export default function Home() {
   useEffect(() => {
     const fetchGames = async () => {
       try {
-        // Obtener el token de autenticación
         const authResponse = await axios.post(
           "https://5rxiw2egtb.execute-api.us-east-1.amazonaws.com/dev/api/auth/login",
           {
@@ -34,7 +33,6 @@ export default function Home() {
 
         const token = authResponse.data.token;
 
-        // Llamar a la API de juegos con el token
         const response = await axios.get(
           "https://5rxiw2egtb.execute-api.us-east-1.amazonaws.com/dev/api/games",
           {
@@ -78,6 +76,8 @@ export default function Home() {
               <Image
                 src={game.play_image_url}
                 alt={game.play_nombre}
+                width={300}
+                height={200}
                 className="w-full h-48 object-cover"
               />
             </CardHeader>

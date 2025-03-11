@@ -6,7 +6,7 @@ body {
   @apply bg-gray-100 dark:bg-gray-900 text-black dark:text-white;
 }
 
-/* Agregar zoom en las tarjetas */
+/* Agregar efecto de zoom en las tarjetas */
 .card-hover:hover {
   transform: scale(1.1);
   transition: transform 0.3s ease-in-out;
