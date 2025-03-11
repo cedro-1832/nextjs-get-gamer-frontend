@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Card, Image, Table, Pagination } from "antd";
 
 interface Game {
   play_guid: string;
@@ -11,6 +10,8 @@ interface Game {
   play_current_price: number;
   play_discount: number;
   play_platforms: string;
+  play_edition: string;
+  play_additional_service: string;
   play_purchase_link: string;
   play_image_url: string;
 }
@@ -80,48 +81,67 @@ export default function Home() {
     <div className="container mx-auto p-6">
       <h1 className="text-3xl font-bold mb-6 text-center">Juegos en Oferta</h1>
 
-
-
       {/* Tabla de Juegos */}
       <h2 className="text-2xl font-bold mt-10 mb-4 text-center">Listado de Juegos</h2>
       {games.length > 0 ? (
-        <Table
-          columns={[
-            { title: "Imagen", dataIndex: "imagen", key: "imagen" },
-            { title: "Nombre", dataIndex: "nombre", key: "nombre" },
-            { title: "Plataforma", dataIndex: "plataforma", key: "plataforma" },
-            { title: "Precio Original", dataIndex: "original_price", key: "original_price" },
-            { title: "Precio con Descuento", dataIndex: "current_price", key: "current_price" },
-            { title: "Enlace", dataIndex: "enlace", key: "enlace" },
-          ]}
-          dataSource={games.map((game) => ({
-            key: game.play_guid,
-            imagen: <Image src={game.play_image_url} alt={game.play_nombre} width={50} height={50} />,
-            nombre: game.play_nombre,
-            plataforma: game.play_platforms,
-            original_price: <span className="line-through text-gray-500">${game.play_original_price}</span>,
-            current_price: <span className="text-green-500">${game.play_current_price}</span>,
-            enlace: (
-              <a href={game.play_purchase_link} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">
-                Comprar
-              </a>
-            ),
-          }))}
-          pagination={false}
-        />
+        <div className="overflow-x-auto">
+          <table className="min-w-full bg-white border border-gray-300">
+            <thead>
+              <tr className="bg-gray-200 text-left">
+                <th className="p-2 border">Imagen</th>
+                <th className="p-2 border">Nombre</th>
+                <th className="p-2 border">Plataforma</th>
+                <th className="p-2 border">Precio Original</th>
+                <th className="p-2 border">Precio con Descuento</th>
+                <th className="p-2 border">Descuento</th>
+                <th className="p-2 border">Edición</th>
+                <th className="p-2 border">Servicio Adicional</th>
+                <th className="p-2 border">Enlace</th>
+              </tr>
+            </thead>
+            <tbody>
+              {games.map((game) => (
+                <tr key={game.play_guid} className="hover:bg-gray-100">
+                  <td className="p-2 border">
+                    <img src={game.play_image_url} alt={game.play_nombre} className="w-16 h-16 object-cover" />
+                  </td>
+                  <td className="p-2 border">{game.play_nombre}</td>
+                  <td className="p-2 border">{game.play_platforms}</td>
+                  <td className="p-2 border line-through text-gray-500">${game.play_original_price}</td>
+                  <td className="p-2 border text-green-500">${game.play_current_price}</td>
+                  <td className="p-2 border">{game.play_discount}%</td>
+                  <td className="p-2 border">{game.play_edition}</td>
+                  <td className="p-2 border">{game.play_additional_service}</td>
+                  <td className="p-2 border">
+                    <a href={game.play_purchase_link} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">
+                      Comprar
+                    </a>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       ) : (
         <p className="text-center text-lg">No hay juegos disponibles.</p>
       )}
 
       {/* Paginación */}
       <div className="flex justify-center mt-6">
-        <Pagination
-          current={currentPage}
-          pageSize={pageSize}
-          total={1757} // Total de juegos disponibles
-          onChange={(page) => setCurrentPage(page)}
-          showSizeChanger={false}
-        />
+        <button
+          className="px-4 py-2 bg-blue-500 text-white rounded disabled:bg-gray-300"
+          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+          disabled={currentPage === 1}
+        >
+          Anterior
+        </button>
+        <span className="mx-4 text-lg">Página {currentPage}</span>
+        <button
+          className="px-4 py-2 bg-blue-500 text-white rounded disabled:bg-gray-300"
+          onClick={() => setCurrentPage((prev) => prev + 1)}
+        >
+          Siguiente
+        </button>
       </div>
     </div>
   );
