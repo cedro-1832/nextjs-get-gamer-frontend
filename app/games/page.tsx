@@ -48,54 +48,14 @@ export default function GamesPage() {
     fetchGames();
   }, [page]);
 
-  if (loading) return <p className="text-center mt-10 text-lg">Cargando juegos...</p>;
-  if (error) return <p className="text-center mt-10 text-lg text-red-500">{error}</p>;
-
   return (
     <div className="container mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6 text-center">Juegos en Oferta</h1>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
-        {games.length > 0 ? (
-          games.map((game) => (
-            <Card key={game.play_guid} className="shadow-lg hover:scale-105 transform transition-transform">
-              <CardHeader>
-                <Image
-                  src={game.play_image_url}
-                  alt={game.play_nombre}
-                  width={300}
-                  height={200}
-                  className="w-full h-40 object-cover"
-                />
-              </CardHeader>
-              <CardBody>
-                <h2 className="font-bold text-lg">{game.play_nombre}</h2>
-                <p className="text-gray-600">{game.play_platforms}</p>
-                <p className="text-red-500 font-bold">-{game.play_discount}%</p>
-                <p className="text-gray-500 line-through">${game.play_original_price}</p>
-                <p className="text-green-500 font-bold">${game.play_current_price}</p>
-              </CardBody>
-            </Card>
-          ))
-        ) : (
-          <p className="text-center col-span-full text-lg">No hay juegos disponibles.</p>
-        )}
-      </div>
-
-      <div className="flex justify-center mt-6 space-x-4">
-        <button
-          onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-          disabled={page === 1}
-          className="px-4 py-2 bg-gray-300 text-black rounded disabled:opacity-50"
-        >
+      <div className="flex justify-between">
+        <button onClick={() => setPage((p) => Math.max(p - 1, 1))} disabled={page === 1}>
           Anterior
         </button>
-        <span className="px-4 py-2 bg-gray-500 text-white rounded">Página {page} de {totalPages}</span>
-        <button
-          onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
-          disabled={page === totalPages}
-          className="px-4 py-2 bg-gray-300 text-black rounded disabled:opacity-50"
-        >
+        <span>Página {page} de {totalPages}</span>
+        <button onClick={() => setPage((p) => Math.min(p + 1, totalPages))} disabled={page === totalPages}>
           Siguiente
         </button>
       </div>

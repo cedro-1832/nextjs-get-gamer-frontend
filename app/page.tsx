@@ -32,7 +32,7 @@ export default function Home() {
             },
           }
         );
-        setGames(response.data?.data || []); // Asegura que `games` sea un array
+        setGames(response.data?.data || []); // Asegurar que `games` sea un array
       } catch (err) {
         console.error("Error al obtener los juegos:", err);
         setError("No se pudieron cargar los juegos. Inténtalo de nuevo.");
@@ -57,39 +57,40 @@ export default function Home() {
 
       {/* Grilla de tarjetas */}
       <div className="grid grid-cols-6 gap-6">
-        {games.slice(0, 24).map((game) => (
-          <Card
-            key={game.play_guid}
-            className="overflow-hidden transform transition-transform duration-300 hover:scale-110 shadow-lg"
-          >
-            <CardHeader>
-              <Image
-                src={game.play_image_url}
-                alt={game.play_nombre}
-                width={300}
-                height={200}
-                className="w-full h-48 object-cover"
-              />
-            </CardHeader>
-            <CardBody>
-              <h2 className="font-bold text-lg">{game.play_nombre}</h2>
-              <p className="text-gray-600">{game.play_platforms}</p>
-              <p className="text-red-500 font-bold">-{game.play_discount}%</p>
-              <p className="text-gray-500 line-through">${game.play_original_price}</p>
-              <p className="text-green-500 font-bold">${game.play_current_price}</p>
-            </CardBody>
-            <CardFooter>
-              <a
-                href={game.play_purchase_link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-2 block bg-blue-500 text-white text-center py-2 rounded"
-              >
-                Comprar
-              </a>
-            </CardFooter>
-          </Card>
-        ))}
+        {games.length > 0 ? (
+          games.slice(0, 24).map((game) => (
+            <Card key={game.play_guid} className="shadow-lg hover:scale-105 transform transition-transform">
+              <CardHeader>
+                <Image
+                  src={game.play_image_url}
+                  alt={game.play_nombre}
+                  width={300}
+                  height={200}
+                  className="w-full h-48 object-cover"
+                />
+              </CardHeader>
+              <CardBody>
+                <h2 className="font-bold text-lg">{game.play_nombre}</h2>
+                <p className="text-gray-600">{game.play_platforms}</p>
+                <p className="text-red-500 font-bold">-{game.play_discount}%</p>
+                <p className="text-gray-500 line-through">${game.play_original_price}</p>
+                <p className="text-green-500 font-bold">${game.play_current_price}</p>
+              </CardBody>
+              <CardFooter>
+                <a
+                  href={game.play_purchase_link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-2 block bg-blue-500 text-white text-center py-2 rounded"
+                >
+                  Comprar
+                </a>
+              </CardFooter>
+            </Card>
+          ))
+        ) : (
+          <p className="text-center col-span-full text-lg">No hay juegos disponibles.</p>
+        )}
       </div>
 
       {/* Tabla de Juegos */}
