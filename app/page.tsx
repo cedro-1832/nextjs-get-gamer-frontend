@@ -21,6 +21,7 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [token, setToken] = useState<string | null>(null);
 
+  // Función para obtener el token
   useEffect(() => {
     const fetchToken = async () => {
       try {
@@ -48,6 +49,7 @@ export default function Home() {
     fetchToken();
   }, []);
 
+  // Función para obtener los juegos
   useEffect(() => {
     if (!token) return;
 
