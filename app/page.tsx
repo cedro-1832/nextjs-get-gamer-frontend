@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Card, CardHeader, CardBody, CardFooter, Image, Navbar, Table } from "@heroui/react";
+import { Card, Image, Table, Pagination } from "antd";
 
 interface Game {
   play_guid: string;
@@ -20,6 +20,8 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [token, setToken] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 24;
 
   // Obtener el token de autenticación
   useEffect(() => {
@@ -56,7 +58,7 @@ export default function Home() {
     const fetchGames = async () => {
       try {
         const response = await axios.get(
-          "https://5rxiw2egtb.execute-api.us-east-1.amazonaws.com/dev/api/games?page=1&limit=24",
+          `https://5rxiw2egtb.execute-api.us-east-1.amazonaws.com/dev/api/games?page=${currentPage}&limit=${pageSize}`,
           { headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" } }
         );
         setGames(response.data?.data || []);
@@ -69,25 +71,22 @@ export default function Home() {
     };
 
     fetchGames();
-  }, [token]);
+  }, [token, currentPage]);
 
   if (loading) return <p className="text-center mt-10 text-lg">Cargando juegos...</p>;
   if (error) return <p className="text-center mt-10 text-lg text-red-500">{error}</p>;
 
   return (
     <div className="container mx-auto p-6">
-      <Navbar className="mb-6 bg-blue-600 text-white">
-        <h1 className="text-xl font-bold px-4">🎮 Tienda de Juegos</h1>
-      </Navbar>
-
       <h1 className="text-3xl font-bold mb-6 text-center">Juegos en Oferta</h1>
 
       {/* Grilla de tarjetas */}
       <div className="grid grid-cols-6 gap-6">
         {games.length > 0 ? (
-          games.slice(0, 24).map((game) => (
-            <Card key={game.play_guid} className="shadow-lg hover:scale-105 transform transition-transform">
-              <CardHeader>
+          games.map((game) => (
+            <Card
+              key={game.play_guid}
+              cover={
                 <Image
                   src={game.play_image_url}
                   alt={game.play_nombre}
@@ -95,24 +94,21 @@ export default function Home() {
                   height={200}
                   className="w-full h-48 object-cover"
                 />
-              </CardHeader>
-              <CardBody>
-                <h2 className="font-bold text-lg">{game.play_nombre}</h2>
-                <p className="text-gray-600">{game.play_platforms}</p>
-                <p className="text-red-500 font-bold">-{game.play_discount}%</p>
-                <p className="text-gray-500 line-through">${game.play_original_price}</p>
-                <p className="text-green-500 font-bold">${game.play_current_price}</p>
-              </CardBody>
-              <CardFooter>
-                <a
-                  href={game.play_purchase_link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-2 block bg-blue-500 text-white text-center py-2 rounded"
-                >
-                  Comprar
-                </a>
-              </CardFooter>
+              }
+              hoverable
+            >
+              <Card.Meta title={game.play_nombre} description={game.play_platforms} />
+              <p className="text-red-500 font-bold mt-2">-{game.play_discount}%</p>
+              <p className="text-gray-500 line-through">${game.play_original_price}</p>
+              <p className="text-green-500 font-bold">${game.play_current_price}</p>
+              <a
+                href={game.play_purchase_link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-2 block bg-blue-500 text-white text-center py-2 rounded"
+              >
+                Comprar
+              </a>
             </Card>
           ))
         ) : (
@@ -122,18 +118,18 @@ export default function Home() {
 
       {/* Tabla de Juegos */}
       <h2 className="text-2xl font-bold mt-10 mb-4 text-center">Listado de Juegos</h2>
-      {games && games.length > 0 ? (
+      {games.length > 0 ? (
         <Table
           columns={[
-            { title: "Imagen", key: "imagen" },
-            { title: "Nombre", key: "nombre" },
-            { title: "Plataforma", key: "plataforma" },
-            { title: "Precio Original", key: "original_price" },
-            { title: "Precio con Descuento", key: "current_price" },
-            { title: "Enlace", key: "enlace" },
+            { title: "Imagen", dataIndex: "imagen", key: "imagen" },
+            { title: "Nombre", dataIndex: "nombre", key: "nombre" },
+            { title: "Plataforma", dataIndex: "plataforma", key: "plataforma" },
+            { title: "Precio Original", dataIndex: "original_price", key: "original_price" },
+            { title: "Precio con Descuento", dataIndex: "current_price", key: "current_price" },
+            { title: "Enlace", dataIndex: "enlace", key: "enlace" },
           ]}
-          data={games.slice(0, 24).map((game) => ({
-            key: game.play_guid, // Agregar un key único
+          dataSource={games.map((game) => ({
+            key: game.play_guid,
             imagen: <Image src={game.play_image_url} alt={game.play_nombre} width={50} height={50} />,
             nombre: game.play_nombre,
             plataforma: game.play_platforms,
@@ -145,10 +141,22 @@ export default function Home() {
               </a>
             ),
           }))}
+          pagination={false}
         />
       ) : (
         <p className="text-center text-lg">No hay juegos disponibles.</p>
       )}
+
+      {/* Paginación */}
+      <div className="flex justify-center mt-6">
+        <Pagination
+          current={currentPage}
+          pageSize={pageSize}
+          total={1757} // Total de juegos disponibles
+          onChange={(page) => setCurrentPage(page)}
+          showSizeChanger={false}
+        />
+      </div>
     </div>
   );
 }
