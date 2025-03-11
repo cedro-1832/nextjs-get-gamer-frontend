@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Table, Pagination, Image, Card, Input, Select, Spin, message } from "antd";
+import { Table, Pagination, Image, Card, Input, Select, Button, Spin, message } from "antd";
 
 const { Option } = Select;
 
@@ -61,26 +61,26 @@ export default function Home() {
     fetchToken();
   }, []);
 
-  // Obtener juegos
-  useEffect(() => {
+  // Obtener juegos con búsqueda
+  const fetchGames = async (searchQuery = "") => {
     if (!token) return;
 
-    const fetchGames = async () => {
-      try {
-        setLoading(true);
-        const response = await axios.get(
-          `https://5rxiw2egtb.execute-api.us-east-1.amazonaws.com/dev/api/games?page=${currentPage}&limit=${pageSize}`,
-          { headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" } }
-        );
-        setGames(response.data?.data || []);
-      } catch (err) {
-        message.error("Error al obtener los juegos.");
-        setError("No se pudieron cargar los juegos.");
-      } finally {
-        setLoading(false);
-      }
-    };
+    try {
+      setLoading(true);
+      const response = await axios.get(
+        `https://5rxiw2egtb.execute-api.us-east-1.amazonaws.com/dev/api/games?name=${searchQuery}&page=${currentPage}&limit=${pageSize}`,
+        { headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" } }
+      );
+      setGames(response.data?.data || []);
+    } catch (err) {
+      message.error("Error al obtener los juegos.");
+      setError("No se pudieron cargar los juegos.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchGames();
   }, [token, currentPage]);
 
@@ -137,7 +137,7 @@ export default function Home() {
     <div style={{ maxWidth: "1200px", margin: "auto", padding: "20px" }}>
       <h1 style={{ textAlign: "center", fontSize: "24px", fontWeight: "bold", marginBottom: "20px" }}>Juegos en Oferta</h1>
 
-      {/* Filtros y búsqueda */}
+      {/* Búsqueda y filtros */}
       <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "20px", gap: "10px" }}>
         <Input
           placeholder="Buscar juego..."
@@ -145,6 +145,7 @@ export default function Home() {
           onChange={(e) => setSearchTerm(e.target.value)}
           style={{ flex: 1 }}
         />
+        <Button type="primary" onClick={() => fetchGames(searchTerm)}>Buscar</Button>
         <Select placeholder="Plataforma" onChange={(value) => setPlatformFilter(value)} allowClear>
           <Option value="PS4">PS4</Option>
           <Option value="PS5">PS5</Option>
@@ -162,7 +163,7 @@ export default function Home() {
       </div>
 
       {/* Tabla de Juegos */}
-      <Card variant="outlined" style={{ boxShadow: "0px 4px 10px rgba(0,0,0,0.1)", borderRadius: "8px", overflow: "hidden" }}>
+      <Card style={{ boxShadow: "0px 4px 10px rgba(0,0,0,0.1)", borderRadius: "8px", overflow: "hidden" }}>
         <Table dataSource={filteredGames} columns={columns} rowKey="play_guid" pagination={false} bordered size="middle" />
       </Card>
 
