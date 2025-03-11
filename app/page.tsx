@@ -24,7 +24,7 @@ export default function Home() {
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 24;
 
-  // Obtener el token de autenticación
+  // Obtener token de autenticación
   useEffect(() => {
     const fetchToken = async () => {
       try {
@@ -52,7 +52,7 @@ export default function Home() {
     fetchToken();
   }, []);
 
-  // Obtener los juegos
+  // Obtener juegos
   useEffect(() => {
     if (!token) return;
 
@@ -85,7 +85,7 @@ export default function Home() {
       <h2 className="text-2xl font-bold mt-10 mb-4 text-center">Listado de Juegos</h2>
       {games.length > 0 ? (
         <div className="overflow-x-auto">
-          <table className="min-w-full bg-white border border-gray-300">
+          <table className="min-w-full bg-white border border-gray-300 rounded-lg shadow-md">
             <thead>
               <tr className="bg-gray-200 text-left">
                 <th className="p-2 border">Imagen</th>
@@ -102,8 +102,14 @@ export default function Home() {
             <tbody>
               {games.map((game) => (
                 <tr key={game.play_guid} className="hover:bg-gray-100">
-                  <td className="p-2 border">
-                    <img src={game.play_image_url} alt={game.play_nombre} className="w-16 h-16 object-cover" />
+                  <td className="p-2 border text-center">
+                    <div className="relative">
+                      <img
+                        src={game.play_image_url}
+                        alt={game.play_nombre}
+                        className="w-16 h-16 object-cover rounded cursor-pointer transition-transform transform hover:scale-125"
+                      />
+                    </div>
                   </td>
                   <td className="p-2 border">{game.play_nombre}</td>
                   <td className="p-2 border">{game.play_platforms}</td>
@@ -112,7 +118,7 @@ export default function Home() {
                   <td className="p-2 border">{game.play_discount}%</td>
                   <td className="p-2 border">{game.play_edition}</td>
                   <td className="p-2 border">{game.play_additional_service}</td>
-                  <td className="p-2 border">
+                  <td className="p-2 border text-center">
                     <a href={game.play_purchase_link} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">
                       Comprar
                     </a>
@@ -127,17 +133,17 @@ export default function Home() {
       )}
 
       {/* Paginación */}
-      <div className="flex justify-center mt-6">
+      <div className="flex justify-center mt-6 space-x-4">
         <button
-          className="px-4 py-2 bg-blue-500 text-white rounded disabled:bg-gray-300"
+          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-gray-300"
           onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
           disabled={currentPage === 1}
         >
           Anterior
         </button>
-        <span className="mx-4 text-lg">Página {currentPage}</span>
+        <span className="mx-4 text-lg font-semibold">Página {currentPage}</span>
         <button
-          className="px-4 py-2 bg-blue-500 text-white rounded disabled:bg-gray-300"
+          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-gray-300"
           onClick={() => setCurrentPage((prev) => prev + 1)}
         >
           Siguiente
