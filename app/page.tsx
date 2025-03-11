@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Card, CardHeader, CardBody, CardFooter, Image, Navbar } from "@heroui/react";
+import { Card, CardHeader, CardBody, CardFooter, Image, Navbar, Table } from "@heroui/react";
 
 interface Game {
   play_guid: string;
@@ -55,45 +55,80 @@ export default function Home() {
 
       <h1 className="text-3xl font-bold mb-6 text-center">Juegos en Oferta</h1>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
-        {games.length > 0 ? (
-          games.map((game) => (
-            <Card
-              key={game.play_guid}
-              className="overflow-hidden transform transition-transform duration-300 hover:scale-110 shadow-lg"
-            >
-              <CardHeader>
-                <Image
-                  src={game.play_image_url}
-                  alt={game.play_nombre}
-                  width={300}
-                  height={200}
-                  className="w-full h-48 object-cover"
-                />
-              </CardHeader>
-              <CardBody>
-                <h2 className="font-bold text-lg">{game.play_nombre}</h2>
-                <p className="text-gray-600">{game.play_platforms}</p>
-                <p className="text-red-500 font-bold">-{game.play_discount}%</p>
-                <p className="text-gray-500 line-through">${game.play_original_price}</p>
-                <p className="text-green-500 font-bold">${game.play_current_price}</p>
-              </CardBody>
-              <CardFooter>
+      {/* Grilla de tarjetas */}
+      <div className="grid grid-cols-6 gap-6">
+        {games.slice(0, 24).map((game) => (
+          <Card
+            key={game.play_guid}
+            className="overflow-hidden transform transition-transform duration-300 hover:scale-110 shadow-lg"
+          >
+            <CardHeader>
+              <Image
+                src={game.play_image_url}
+                alt={game.play_nombre}
+                width={300}
+                height={200}
+                className="w-full h-48 object-cover"
+              />
+            </CardHeader>
+            <CardBody>
+              <h2 className="font-bold text-lg">{game.play_nombre}</h2>
+              <p className="text-gray-600">{game.play_platforms}</p>
+              <p className="text-red-500 font-bold">-{game.play_discount}%</p>
+              <p className="text-gray-500 line-through">${game.play_original_price}</p>
+              <p className="text-green-500 font-bold">${game.play_current_price}</p>
+            </CardBody>
+            <CardFooter>
+              <a
+                href={game.play_purchase_link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-2 block bg-blue-500 text-white text-center py-2 rounded"
+              >
+                Comprar
+              </a>
+            </CardFooter>
+          </Card>
+        ))}
+      </div>
+
+      {/* Tabla de Juegos */}
+      <h2 className="text-2xl font-bold mt-10 mb-4 text-center">Listado de Juegos</h2>
+      <Table>
+        <thead>
+          <tr>
+            <th>Imagen</th>
+            <th>Nombre</th>
+            <th>Plataforma</th>
+            <th>Precio Original</th>
+            <th>Precio con Descuento</th>
+            <th>Enlace</th>
+          </tr>
+        </thead>
+        <tbody>
+          {games.slice(0, 24).map((game) => (
+            <tr key={game.play_guid}>
+              <td>
+                <Image src={game.play_image_url} alt={game.play_nombre} width={50} height={50} />
+              </td>
+              <td>{game.play_nombre}</td>
+              <td>{game.play_platforms}</td>
+              <td className="line-through text-gray-500">${game.play_original_price}</td>
+              <td className="text-green-500">${game.play_current_price}</td>
+              <td>
                 <a
                   href={game.play_purchase_link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-2 block bg-blue-500 text-white text-center py-2 rounded"
+                  className="text-blue-500 underline"
                 >
                   Comprar
                 </a>
-              </CardFooter>
-            </Card>
-          ))
-        ) : (
-          <p className="text-center col-span-full text-lg">No hay juegos disponibles.</p>
-        )}
-      </div>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </Table>
     </div>
   );
 }
