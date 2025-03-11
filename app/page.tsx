@@ -21,7 +21,7 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [token, setToken] = useState<string | null>(null);
 
-  // Función para obtener el token
+  // Obtener el token de autenticación
   useEffect(() => {
     const fetchToken = async () => {
       try {
@@ -49,7 +49,7 @@ export default function Home() {
     fetchToken();
   }, []);
 
-  // Función para obtener los juegos
+  // Obtener los juegos
   useEffect(() => {
     if (!token) return;
 
@@ -122,7 +122,7 @@ export default function Home() {
 
       {/* Tabla de Juegos */}
       <h2 className="text-2xl font-bold mt-10 mb-4 text-center">Listado de Juegos</h2>
-      {games.length > 0 ? (
+      {games && games.length > 0 ? (
         <Table
           columns={[
             { title: "Imagen", key: "imagen" },
@@ -133,6 +133,7 @@ export default function Home() {
             { title: "Enlace", key: "enlace" },
           ]}
           data={games.slice(0, 24).map((game) => ({
+            key: game.play_guid, // Agregar un key único
             imagen: <Image src={game.play_image_url} alt={game.play_nombre} width={50} height={50} />,
             nombre: game.play_nombre,
             plataforma: game.play_platforms,
