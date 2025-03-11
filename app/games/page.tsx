@@ -21,7 +21,7 @@ export default function GamesPage() {
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const limit = 24;
-  const totalPages = 74; // Suponiendo que este valor viene de la API
+  const totalPages = 74; // Se puede ajustar con los datos de la API
 
   useEffect(() => {
     const fetchGames = async () => {
@@ -46,7 +46,7 @@ export default function GamesPage() {
           }
         );
 
-        setGames(response.data.data);
+        setGames(response.data?.data || []);
       } catch (err) {
         console.error("Error al obtener los juegos:", err);
         setError("No se pudieron cargar los juegos. Inténtalo de nuevo.");
@@ -66,32 +66,36 @@ export default function GamesPage() {
       <h1 className="text-3xl font-bold mb-6 text-center">Juegos en Oferta</h1>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
-        {games.map((game) => (
-          <div key={game.play_guid} className="border rounded-lg shadow-lg overflow-hidden bg-white dark:bg-gray-800 transform transition-transform duration-300 hover:scale-105">
-            <Image
-              src={game.play_image_url}
-              alt={game.play_nombre}
-              width={300}
-              height={200}
-              className="w-full h-40 object-cover"
-            />
-            <div className="p-4">
-              <h2 className="font-bold text-lg">{game.play_nombre}</h2>
-              <p className="text-gray-600">{game.play_platforms}</p>
-              <p className="text-red-500 font-bold">-{game.play_discount}%</p>
-              <p className="text-gray-500 line-through">${game.play_original_price}</p>
-              <p className="text-green-500 font-bold">${game.play_current_price}</p>
-              <a
-                href={game.play_purchase_link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-2 block bg-blue-500 text-white text-center py-2 rounded"
-              >
-                Comprar
-              </a>
+        {games.length > 0 ? (
+          games.map((game) => (
+            <div key={game.play_guid} className="border rounded-lg shadow-lg overflow-hidden bg-white dark:bg-gray-800 transform transition-transform duration-300 hover:scale-105">
+              <Image
+                src={game.play_image_url}
+                alt={game.play_nombre}
+                width={300}
+                height={200}
+                className="w-full h-40 object-cover"
+              />
+              <div className="p-4">
+                <h2 className="font-bold text-lg">{game.play_nombre}</h2>
+                <p className="text-gray-600">{game.play_platforms}</p>
+                <p className="text-red-500 font-bold">-{game.play_discount}%</p>
+                <p className="text-gray-500 line-through">${game.play_original_price}</p>
+                <p className="text-green-500 font-bold">${game.play_current_price}</p>
+                <a
+                  href={game.play_purchase_link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-2 block bg-blue-500 text-white text-center py-2 rounded"
+                >
+                  Comprar
+                </a>
+              </div>
             </div>
-          </div>
-        ))}
+          ))
+        ) : (
+          <p className="text-center col-span-full text-lg">No hay juegos disponibles.</p>
+        )}
       </div>
 
       {/* Paginación */}

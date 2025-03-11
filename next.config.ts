@@ -1,8 +1,8 @@
 import type { NextConfig } from "next";
 
-const nextConfig = {
+const nextConfig: NextConfig = {
   images: {
-    domains: ["image.api.playstation.com"],
+    domains: ["image.api.playstation.com", "cdn.akamai.steamstatic.com"],
   },
 };
 

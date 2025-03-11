@@ -10,6 +10,7 @@ rm -rf node_modules package-lock.json .next
 
 # 2️⃣ Limpiar la caché de npm
 echo "🗑 Limpiando caché de npm..."
+sudo chown -R $USER:$USER ~/.npm
 npm cache clean --force
 
 # 3️⃣ Reinstalar dependencias
