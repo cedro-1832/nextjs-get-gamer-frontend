@@ -80,41 +80,7 @@ export default function Home() {
     <div className="container mx-auto p-6">
       <h1 className="text-3xl font-bold mb-6 text-center">Juegos en Oferta</h1>
 
-      {/* Grilla de tarjetas */}
-      <div className="grid grid-cols-6 gap-6">
-        {games.length > 0 ? (
-          games.map((game) => (
-            <Card
-              key={game.play_guid}
-              cover={
-                <Image
-                  src={game.play_image_url}
-                  alt={game.play_nombre}
-                  width={300}
-                  height={200}
-                  className="w-full h-48 object-cover"
-                />
-              }
-              hoverable
-            >
-              <Card.Meta title={game.play_nombre} description={game.play_platforms} />
-              <p className="text-red-500 font-bold mt-2">-{game.play_discount}%</p>
-              <p className="text-gray-500 line-through">${game.play_original_price}</p>
-              <p className="text-green-500 font-bold">${game.play_current_price}</p>
-              <a
-                href={game.play_purchase_link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-2 block bg-blue-500 text-white text-center py-2 rounded"
-              >
-                Comprar
-              </a>
-            </Card>
-          ))
-        ) : (
-          <p className="text-center col-span-full text-lg">No hay juegos disponibles.</p>
-        )}
-      </div>
+
 
       {/* Tabla de Juegos */}
       <h2 className="text-2xl font-bold mt-10 mb-4 text-center">Listado de Juegos</h2>
