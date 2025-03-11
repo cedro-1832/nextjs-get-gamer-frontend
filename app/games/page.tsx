@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import axios from "axios";
+import { Card, CardHeader, CardBody, CardFooter, Image } from "@heroui/react";
 
 interface Game {
   play_guid: string;
@@ -21,26 +21,16 @@ export default function GamesPage() {
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const limit = 24;
-  const totalPages = 74; // Se puede ajustar con los datos de la API
+  const totalPages = 74; // Ajustar con los datos de la API
 
   useEffect(() => {
     const fetchGames = async () => {
       try {
-        const authResponse = await axios.post(
-          "https://5rxiw2egtb.execute-api.us-east-1.amazonaws.com/dev/api/auth/login",
-          {
-            username: "admin",
-            password: "password123",
-          }
-        );
-
-        const token = authResponse.data.token;
-
         const response = await axios.get(
           `https://5rxiw2egtb.execute-api.us-east-1.amazonaws.com/dev/api/games?page=${page}&limit=${limit}`,
           {
             headers: {
-              Authorization: `Bearer ${token}`,
+              Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiaWF0IjoxNzQxNjU1ODU0LCJleHAiOjE3NDE2NTk0NTR9.1mAVGMVzOC_nGgyshVfWllobc8jHJ_ZF5T6-T9AlPxE`,
               "Content-Type": "application/json",
             },
           }
@@ -68,37 +58,30 @@ export default function GamesPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
         {games.length > 0 ? (
           games.map((game) => (
-            <div key={game.play_guid} className="border rounded-lg shadow-lg overflow-hidden bg-white dark:bg-gray-800 transform transition-transform duration-300 hover:scale-105">
-              <Image
-                src={game.play_image_url}
-                alt={game.play_nombre}
-                width={300}
-                height={200}
-                className="w-full h-40 object-cover"
-              />
-              <div className="p-4">
+            <Card key={game.play_guid} className="shadow-lg hover:scale-105 transform transition-transform">
+              <CardHeader>
+                <Image
+                  src={game.play_image_url}
+                  alt={game.play_nombre}
+                  width={300}
+                  height={200}
+                  className="w-full h-40 object-cover"
+                />
+              </CardHeader>
+              <CardBody>
                 <h2 className="font-bold text-lg">{game.play_nombre}</h2>
                 <p className="text-gray-600">{game.play_platforms}</p>
                 <p className="text-red-500 font-bold">-{game.play_discount}%</p>
                 <p className="text-gray-500 line-through">${game.play_original_price}</p>
                 <p className="text-green-500 font-bold">${game.play_current_price}</p>
-                <a
-                  href={game.play_purchase_link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-2 block bg-blue-500 text-white text-center py-2 rounded"
-                >
-                  Comprar
-                </a>
-              </div>
-            </div>
+              </CardBody>
+            </Card>
           ))
         ) : (
           <p className="text-center col-span-full text-lg">No hay juegos disponibles.</p>
         )}
       </div>
 
-      {/* Paginación */}
       <div className="flex justify-center mt-6 space-x-4">
         <button
           onClick={() => setPage((prev) => Math.max(prev - 1, 1))}

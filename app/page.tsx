@@ -23,27 +23,16 @@ export default function Home() {
   useEffect(() => {
     const fetchGames = async () => {
       try {
-        const authResponse = await axios.post(
-          "https://5rxiw2egtb.execute-api.us-east-1.amazonaws.com/dev/api/auth/login",
-          {
-            username: "admin",
-            password: "password123",
-          }
-        );
-
-        const token = authResponse.data.token;
-
         const response = await axios.get(
-          "https://5rxiw2egtb.execute-api.us-east-1.amazonaws.com/dev/api/games",
+          "https://5rxiw2egtb.execute-api.us-east-1.amazonaws.com/dev/api/games?page=1&limit=24",
           {
             headers: {
-              Authorization: `Bearer ${token}`,
+              Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiaWF0IjoxNzQxNjU1ODU0LCJleHAiOjE3NDE2NTk0NTR9.1mAVGMVzOC_nGgyshVfWllobc8jHJ_ZF5T6-T9AlPxE`,
               "Content-Type": "application/json",
             },
           }
         );
-
-        setGames(response.data.games);
+        setGames(response.data?.data || []); // Asegura que `games` sea un array
       } catch (err) {
         console.error("Error al obtener los juegos:", err);
         setError("No se pudieron cargar los juegos. Inténtalo de nuevo.");
@@ -67,39 +56,43 @@ export default function Home() {
       <h1 className="text-3xl font-bold mb-6 text-center">Juegos en Oferta</h1>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
-        {games.map((game) => (
-          <Card
-            key={game.play_guid}
-            className="overflow-hidden transform transition-transform duration-300 hover:scale-110 shadow-lg"
-          >
-            <CardHeader>
-              <Image
-                src={game.play_image_url}
-                alt={game.play_nombre}
-                width={300}
-                height={200}
-                className="w-full h-48 object-cover"
-              />
-            </CardHeader>
-            <CardBody>
-              <h2 className="font-bold text-lg">{game.play_nombre}</h2>
-              <p className="text-gray-600">{game.play_platforms}</p>
-              <p className="text-red-500 font-bold">-{game.play_discount}%</p>
-              <p className="text-gray-500 line-through">${game.play_original_price}</p>
-              <p className="text-green-500 font-bold">${game.play_current_price}</p>
-            </CardBody>
-            <CardFooter>
-              <a
-                href={game.play_purchase_link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-2 block bg-blue-500 text-white text-center py-2 rounded"
-              >
-                Comprar
-              </a>
-            </CardFooter>
-          </Card>
-        ))}
+        {games.length > 0 ? (
+          games.map((game) => (
+            <Card
+              key={game.play_guid}
+              className="overflow-hidden transform transition-transform duration-300 hover:scale-110 shadow-lg"
+            >
+              <CardHeader>
+                <Image
+                  src={game.play_image_url}
+                  alt={game.play_nombre}
+                  width={300}
+                  height={200}
+                  className="w-full h-48 object-cover"
+                />
+              </CardHeader>
+              <CardBody>
+                <h2 className="font-bold text-lg">{game.play_nombre}</h2>
+                <p className="text-gray-600">{game.play_platforms}</p>
+                <p className="text-red-500 font-bold">-{game.play_discount}%</p>
+                <p className="text-gray-500 line-through">${game.play_original_price}</p>
+                <p className="text-green-500 font-bold">${game.play_current_price}</p>
+              </CardBody>
+              <CardFooter>
+                <a
+                  href={game.play_purchase_link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-2 block bg-blue-500 text-white text-center py-2 rounded"
+                >
+                  Comprar
+                </a>
+              </CardFooter>
+            </Card>
+          ))
+        ) : (
+          <p className="text-center col-span-full text-lg">No hay juegos disponibles.</p>
+        )}
       </div>
     </div>
   );
