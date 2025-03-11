@@ -34,7 +34,7 @@ export default function Home() {
 
         const token = authResponse.data.token;
 
-        // Llamada a la API de juegos con el token obtenido
+        // Llamar a la API de juegos con el token
         const response = await axios.get(
           "https://5rxiw2egtb.execute-api.us-east-1.amazonaws.com/dev/api/games",
           {
@@ -65,7 +65,9 @@ export default function Home() {
       <Navbar className="mb-6 bg-blue-600 text-white">
         <h1 className="text-xl font-bold px-4">🎮 Tienda de Juegos</h1>
       </Navbar>
+
       <h1 className="text-3xl font-bold mb-6 text-center">Juegos en Oferta</h1>
+
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
         {games.map((game) => (
           <Card
