@@ -94,41 +94,28 @@ export default function Home() {
 
       {/* Tabla de Juegos */}
       <h2 className="text-2xl font-bold mt-10 mb-4 text-center">Listado de Juegos</h2>
-      <Table>
-        <thead>
-          <tr>
-            <th>Imagen</th>
-            <th>Nombre</th>
-            <th>Plataforma</th>
-            <th>Precio Original</th>
-            <th>Precio con Descuento</th>
-            <th>Enlace</th>
-          </tr>
-        </thead>
-        <tbody>
-          {games.slice(0, 24).map((game) => (
-            <tr key={game.play_guid}>
-              <td>
-                <Image src={game.play_image_url} alt={game.play_nombre} width={50} height={50} />
-              </td>
-              <td>{game.play_nombre}</td>
-              <td>{game.play_platforms}</td>
-              <td className="line-through text-gray-500">${game.play_original_price}</td>
-              <td className="text-green-500">${game.play_current_price}</td>
-              <td>
-                <a
-                  href={game.play_purchase_link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-500 underline"
-                >
-                  Comprar
-                </a>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
+      <Table
+        columns={[
+          { title: "Imagen", key: "imagen" },
+          { title: "Nombre", key: "nombre" },
+          { title: "Plataforma", key: "plataforma" },
+          { title: "Precio Original", key: "original_price" },
+          { title: "Precio con Descuento", key: "current_price" },
+          { title: "Enlace", key: "enlace" },
+        ]}
+        data={games.slice(0, 24).map((game) => ({
+          imagen: <Image src={game.play_image_url} alt={game.play_nombre} width={50} height={50} />,
+          nombre: game.play_nombre,
+          plataforma: game.play_platforms,
+          original_price: <span className="line-through text-gray-500">${game.play_original_price}</span>,
+          current_price: <span className="text-green-500">${game.play_current_price}</span>,
+          enlace: (
+            <a href={game.play_purchase_link} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">
+              Comprar
+            </a>
+          ),
+        }))}
+      />
     </div>
   );
 }
