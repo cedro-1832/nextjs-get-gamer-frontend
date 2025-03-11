@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import axios from "axios";
+import { Card, CardHeader, CardBody, CardFooter } from "@heroui/react";
+import { Image } from "@heroui/react";
+import { Navbar } from "@heroui/react";
 
 interface Game {
   play_guid: string;
@@ -62,23 +64,31 @@ export default function Home() {
 
   return (
     <div className="container mx-auto p-6">
+      <Navbar className="mb-6 bg-blue-600 text-white">
+        <h1 className="text-xl font-bold px-4">🎮 Tienda de Juegos</h1>
+      </Navbar>
       <h1 className="text-3xl font-bold mb-6 text-center">Juegos en Oferta</h1>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
         {games.map((game) => (
-          <div key={game.play_guid} className="border rounded-lg shadow-lg overflow-hidden bg-white dark:bg-gray-800">
-            <Image
-              src={game.play_image_url}
-              alt={game.play_nombre}
-              width={300}
-              height={200}
-              className="w-full h-40 object-cover"
-            />
-            <div className="p-4">
+          <Card
+            key={game.play_guid}
+            className="overflow-hidden transform transition-transform duration-300 hover:scale-105 shadow-lg"
+          >
+            <CardHeader>
+              <Image
+                src={game.play_image_url}
+                alt={game.play_nombre}
+                className="w-full h-48 object-cover"
+              />
+            </CardHeader>
+            <CardBody>
               <h2 className="font-bold text-lg">{game.play_nombre}</h2>
               <p className="text-gray-600">{game.play_platforms}</p>
               <p className="text-red-500 font-bold">-{game.play_discount}%</p>
               <p className="text-gray-500 line-through">${game.play_original_price}</p>
               <p className="text-green-500 font-bold">${game.play_current_price}</p>
+            </CardBody>
+            <CardFooter>
               <a
                 href={game.play_purchase_link}
                 target="_blank"
@@ -87,8 +97,8 @@ export default function Home() {
               >
                 Comprar
               </a>
-            </div>
-          </div>
+            </CardFooter>
+          </Card>
         ))}
       </div>
     </div>
