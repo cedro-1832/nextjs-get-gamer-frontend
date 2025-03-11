@@ -2,9 +2,7 @@
 
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Card, CardHeader, CardBody, CardFooter } from "@heroui/react";
-import { Image } from "@heroui/react";
-import { Navbar } from "@heroui/react";
+import { Card, CardHeader, CardBody, CardFooter, Image, Navbar } from "@heroui/react";
 
 interface Game {
   play_guid: string;
@@ -72,7 +70,7 @@ export default function Home() {
         {games.map((game) => (
           <Card
             key={game.play_guid}
-            className="overflow-hidden transform transition-transform duration-300 hover:scale-105 shadow-lg"
+            className="overflow-hidden transform transition-transform duration-300 hover:scale-110 shadow-lg"
           >
             <CardHeader>
               <Image
