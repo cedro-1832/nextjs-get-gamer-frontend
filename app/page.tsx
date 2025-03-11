@@ -32,7 +32,7 @@ export default function Home() {
             },
           }
         );
-        setGames(response.data?.data || []); // Asegurar que `games` sea un array
+        setGames(response.data?.data || []); // Asegurar que `games` sea un array válido
       } catch (err) {
         console.error("Error al obtener los juegos:", err);
         setError("No se pudieron cargar los juegos. Inténtalo de nuevo.");
@@ -95,28 +95,32 @@ export default function Home() {
 
       {/* Tabla de Juegos */}
       <h2 className="text-2xl font-bold mt-10 mb-4 text-center">Listado de Juegos</h2>
-      <Table
-        columns={[
-          { title: "Imagen", key: "imagen" },
-          { title: "Nombre", key: "nombre" },
-          { title: "Plataforma", key: "plataforma" },
-          { title: "Precio Original", key: "original_price" },
-          { title: "Precio con Descuento", key: "current_price" },
-          { title: "Enlace", key: "enlace" },
-        ]}
-        data={games.slice(0, 24).map((game) => ({
-          imagen: <Image src={game.play_image_url} alt={game.play_nombre} width={50} height={50} />,
-          nombre: game.play_nombre,
-          plataforma: game.play_platforms,
-          original_price: <span className="line-through text-gray-500">${game.play_original_price}</span>,
-          current_price: <span className="text-green-500">${game.play_current_price}</span>,
-          enlace: (
-            <a href={game.play_purchase_link} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">
-              Comprar
-            </a>
-          ),
-        }))}
-      />
+      {games.length > 0 ? (
+        <Table
+          columns={[
+            { title: "Imagen", key: "imagen" },
+            { title: "Nombre", key: "nombre" },
+            { title: "Plataforma", key: "plataforma" },
+            { title: "Precio Original", key: "original_price" },
+            { title: "Precio con Descuento", key: "current_price" },
+            { title: "Enlace", key: "enlace" },
+          ]}
+          data={games.slice(0, 24).map((game) => ({
+            imagen: <Image src={game.play_image_url} alt={game.play_nombre} width={50} height={50} />,
+            nombre: game.play_nombre,
+            plataforma: game.play_platforms,
+            original_price: <span className="line-through text-gray-500">${game.play_original_price}</span>,
+            current_price: <span className="text-green-500">${game.play_current_price}</span>,
+            enlace: (
+              <a href={game.play_purchase_link} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">
+                Comprar
+              </a>
+            ),
+          }))}
+        />
+      ) : (
+        <p className="text-center text-lg">No hay juegos disponibles.</p>
+      )}
     </div>
   );
 }
