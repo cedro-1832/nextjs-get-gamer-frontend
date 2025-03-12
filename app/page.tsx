@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import {
   Table,
-  Pagination,
   Image,
   Card,
   Input,
