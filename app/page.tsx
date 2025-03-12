@@ -2,7 +2,17 @@
 
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Table, Pagination, Image, Card, Input, Select, Button, Spin, message } from "antd";
+import {
+  Table,
+  Pagination,
+  Image,
+  Card,
+  Input,
+  Select,
+  Button,
+  Spin,
+  message,
+} from "antd";
 
 const { Option } = Select;
 
@@ -24,14 +34,11 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [token, setToken] = useState<string | null>(null);
-  const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [platformFilter, setPlatformFilter] = useState<string | null>(null);
   const [editionFilter, setEditionFilter] = useState<string | null>(null);
   const [serviceFilter, setServiceFilter] = useState<string | null>(null);
   const [sortOrder, setSortOrder] = useState<string | null>(null);
-
-  const pageSize = 24;
 
   // Obtener token de autenticación
   useEffect(() => {
@@ -61,15 +68,20 @@ export default function Home() {
     fetchToken();
   }, []);
 
-  // Obtener juegos con búsqueda
+  // Obtener todos los juegos sin paginación
   const fetchGames = async (searchQuery = "") => {
     if (!token) return;
 
     try {
       setLoading(true);
       const response = await axios.get(
-        `https://5rxiw2egtb.execute-api.us-east-1.amazonaws.com/dev/api/games?name=${searchQuery}&page=${currentPage}&limit=${pageSize}`,
-        { headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" } }
+        `https://5rxiw2egtb.execute-api.us-east-1.amazonaws.com/dev/api/games/all`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
       );
       setGames(response.data?.data || []);
     } catch (err) {
@@ -82,7 +94,7 @@ export default function Home() {
 
   useEffect(() => {
     fetchGames();
-  }, [token, currentPage]);
+  }, [token]);
 
   if (loading) return <Spin size="large" className="flex justify-center items-center mt-10" />;
   if (error) return <p className="text-center mt-10 text-lg text-red-500">{error}</p>;
@@ -166,11 +178,6 @@ export default function Home() {
       <Card style={{ boxShadow: "0px 4px 10px rgba(0,0,0,0.1)", borderRadius: "8px", overflow: "hidden" }}>
         <Table dataSource={filteredGames} columns={columns} rowKey="play_guid" pagination={false} bordered size="middle" />
       </Card>
-
-      {/* Paginación */}
-      <div style={{ display: "flex", justifyContent: "center", marginTop: "20px" }}>
-        <Pagination current={currentPage} pageSize={pageSize} onChange={setCurrentPage} total={1757} showSizeChanger={false} />
-      </div>
     </div>
   );
 }
