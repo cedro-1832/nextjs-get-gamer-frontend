@@ -160,12 +160,29 @@ export default function Home() {
         <Select placeholder="Plataforma" onChange={(value) => setPlatformFilter(value)} allowClear>
           <Option value="PS4">PS4</Option>
           <Option value="PS5">PS5</Option>
+          <Option value="PS5, PS4">PS5, PS4</Option>
+          <Option value="No disponible">No disponible</Option>
         </Select>
         <Select placeholder="Edición" onChange={(value) => setEditionFilter(value)} allowClear>
           <Option value="No disponible">No disponible</Option>
+          <Option value="Vehicle">Vehicle</Option>
+          <Option value="Premium Edition">Premium Edition</Option>
+          <Option value="Add-on">Premium Edition</Option>
+          <Option value="Game Bundle">Premium Edition</Option>
+          <Option value="Character">Premium Edition</Option>
+          <Option value="Level">Premium Edition</Option>
+          <Option value="Item">Premium Edition</Option>
+          <Option value="Costume">Premium Edition</Option>
+          <Option value="Season Pass">Premium Edition</Option>
         </Select>
         <Select placeholder="Servicio Adicional" onChange={(value) => setServiceFilter(value)} allowClear>
           <Option value="No disponible">No disponible</Option>
+          <Option value="Save 5% more">Save 5% more</Option>
+          <Option value="Save 10% more">Save 5% more</Option>
+          <Option value="Save 15% more">Save 5% more</Option>
+          <Option value="Save 20% more">Save 5% more</Option>
+          <Option value="Save 30% more">Save 5% more</Option>
+          <Option value="Premium">Save 5% more</Option>
         </Select>
         <Select placeholder="Ordenar por" onChange={(value) => setSortOrder(value)} allowClear>
           <Option value="discount">Descuento</Option>
