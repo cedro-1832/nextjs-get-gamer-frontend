@@ -2,16 +2,7 @@
 
 import { useEffect, useState } from "react";
 import axios from "axios";
-import {
-  Table,
-  Image,
-  Card,
-  Input,
-  Select,
-  Button,
-  Spin,
-  message,
-} from "antd";
+import { Table, Image, Card, Input, Select, Button, Spin, message } from "antd";
 
 const { Option } = Select;
 
@@ -37,7 +28,6 @@ export default function Home() {
   const [platformFilter, setPlatformFilter] = useState<string | null>(null);
   const [editionFilter, setEditionFilter] = useState<string | null>(null);
   const [serviceFilter, setServiceFilter] = useState<string | null>(null);
-  const [sortOrder, setSortOrder] = useState<string | null>(null);
 
   // Obtener token de autenticación
   useEffect(() => {
@@ -68,7 +58,7 @@ export default function Home() {
   }, []);
 
   // Obtener todos los juegos sin paginación
-  const fetchGames = async (searchQuery = "") => {
+  const fetchGames = async () => {
     if (!token) return;
 
     try {
@@ -101,14 +91,9 @@ export default function Home() {
   // Filtrar juegos por búsqueda y filtros
   const filteredGames = games
     .filter((game) => game.play_nombre.toLowerCase().includes(searchTerm.toLowerCase()))
-    .filter((game) => (platformFilter ? game.play_platforms.includes(platformFilter) : true))
-    .filter((game) => (editionFilter ? game.play_edition.includes(editionFilter) : true))
-    .filter((game) => (serviceFilter ? game.play_additional_service.includes(serviceFilter) : true))
-    .sort((a, b) => {
-      if (sortOrder === "discount") return b.play_discount - a.play_discount;
-      if (sortOrder === "price") return a.play_current_price - b.play_current_price;
-      return 0;
-    });
+    .filter((game) => (platformFilter ? game.play_platforms === platformFilter : true))
+    .filter((game) => (editionFilter ? game.play_edition === editionFilter : true))
+    .filter((game) => (serviceFilter ? game.play_additional_service === serviceFilter : true));
 
   const columns = [
     {
@@ -156,7 +141,7 @@ export default function Home() {
           onChange={(e) => setSearchTerm(e.target.value)}
           style={{ flex: 1 }}
         />
-        <Button type="primary" onClick={() => fetchGames(searchTerm)}>Buscar</Button>
+        <Button type="primary" onClick={fetchGames}>Buscar</Button>
         <Select placeholder="Plataforma" onChange={(value) => setPlatformFilter(value)} allowClear>
           <Option value="PS4">PS4</Option>
           <Option value="PS5">PS5</Option>
@@ -164,29 +149,14 @@ export default function Home() {
           <Option value="No disponible">No disponible</Option>
         </Select>
         <Select placeholder="Edición" onChange={(value) => setEditionFilter(value)} allowClear>
-          <Option value="No disponible">No disponible</Option>
-          <Option value="Vehicle">Vehicle</Option>
-          <Option value="Premium Edition">Premium Edition</Option>
-          <Option value="Add-on">Premium Edition</Option>
-          <Option value="Game Bundle">Premium Edition</Option>
-          <Option value="Character">Premium Edition</Option>
-          <Option value="Level">Premium Edition</Option>
-          <Option value="Item">Premium Edition</Option>
-          <Option value="Costume">Premium Edition</Option>
-          <Option value="Season Pass">Premium Edition</Option>
+          {["No disponible", "Vehicle", "Premium Edition", "Add-on", "Game Bundle", "Character", "Level", "Item", "Costume", "Season Pass"].map(option => (
+            <Option key={option} value={option}>{option}</Option>
+          ))}
         </Select>
         <Select placeholder="Servicio Adicional" onChange={(value) => setServiceFilter(value)} allowClear>
-          <Option value="No disponible">No disponible</Option>
-          <Option value="Save 5% more">Save 5% more</Option>
-          <Option value="Save 10% more">Save 5% more</Option>
-          <Option value="Save 15% more">Save 5% more</Option>
-          <Option value="Save 20% more">Save 5% more</Option>
-          <Option value="Save 30% more">Save 5% more</Option>
-          <Option value="Premium">Save 5% more</Option>
-        </Select>
-        <Select placeholder="Ordenar por" onChange={(value) => setSortOrder(value)} allowClear>
-          <Option value="discount">Descuento</Option>
-          <Option value="price">Precio</Option>
+          {["No disponible", "Save 5% more", "Save 10% more", "Save 15% more", "Save 20% more", "Save 30% more", "Premium"].map(option => (
+            <Option key={option} value={option}>{option}</Option>
+          ))}
         </Select>
       </div>
 
